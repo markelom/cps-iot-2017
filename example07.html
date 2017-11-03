@@ -1,0 +1,40 @@
+<!doctype html>
+<meta charcset = utf8>
+<html>
+<head>
+    <title>Example with buttons</title>
+</head>
+
+<body>
+
+
+<div id="output"></div>
+
+
+
+
+<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+<script type="text/javascript">
+
+
+var socket1 = io.connect("172.16.22.138:8080"); //connect via socket
+
+function log(msg) { // funkcija, for printing messages in div, the argument is message
+    return '<div>' + msg + '</div>';
+}
+socket.on('messageToClient', function(msg) { // when we receive the message
+    output.innerHTML += log(msg); // we print it to div
+});
+socket.on('disconnect', function() { // on disconnect
+    output.innerHTML += log("Disconnected from server"); // we print the status to div
+});
+
+    
+</script>
+
+
+
+</body>
+
+
+</html>
