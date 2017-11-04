@@ -9,6 +9,10 @@ var board = new firmata.Board("/dev/ttyACM0", function(){ // ACM Abstract Contro
     board.pinMode(8, board.MODES.OUTPUT); // Configures the specified pin to behave either as an input or an output.
     console.log("Activation of Pin 13");
     board.pinMode(13, board.MODES.OUTPUT);
+    console.log("Activation of Pin 9");
+    board.pinMode(9, board.MODES.OUTPUT); // Configures the specified pin to behave either as an input or an output.
+    console.log("Activation of Pin 10");
+    board.pinMode(10, board.MODES.OUTPUT);
     
 });
 
@@ -41,7 +45,35 @@ io.sockets.on("connection", function(socket){
         }
         if (commandNo == "3") {
             board.digitalWrite(8, board.HIGH); // write HIGH on pin 8
-        }       
+        }     
+        
+        if (commandNo == "4") {
+            board.digitalWrite(10, board.LOW); // write LOW on pin 10
+        }
+        if (commandNo == "5") {
+         board.digitalWrite(10, board.HIGH); // write LOW on pin 10
+        }
+        if (commandNo == "6") {
+            board.digitalWrite(9, board.LOW); // write LOW on pin 9
+        }
+        if (commandNo == "7") {
+            board.digitalWrite(9, board.HIGH); // write HIGH on pin 9
+        } 
+        
+        
+         if (commandNo == "8") {
+            board.digitalWrite(8, board.LOW); 
+             board.digitalWrite(13, board.LOW);
+             board.digitalWrite(10, board.LOW);
+             board.digitalWrite(9, board.LOW);
+        }
+        if (commandNo == "9") {
+            board.digitalWrite(8, board.HIGH); 
+             board.digitalWrite(13, board.HIGH);
+             board.digitalWrite(10, board.HIGH);
+             board.digitalWrite(9, board.HIGH);
+        }  
+        
         
   });
 });
