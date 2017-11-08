@@ -8,9 +8,9 @@ var board = new firmata.Board("/dev/ttyACM0", function(){ // ACM Abstract Contro
     console.log("Enabling Push Button on pin 2");
     board.pinMode(2, board.MODES.INPUT);
     console.log("Activation of Pin 13");
-    board.pinMode(13, board.MODES.OUTPUT); // Configures the specified pin to behave either as an input or an output.
+    board.pinMode(13, board.MODES.OUTPUT);
+    
 });
-
 
 
 function handler(req, res){
@@ -29,20 +29,34 @@ function handler(req, res){
 
 http.listen(8080);// server will listen on port 8080
 
-io.sockets.on("connection", function(socket){
-    board.digitalRead(2, function(value) {
+var sendValueViaSocket = function(){};
+
+
+board.on("ready", function(){
+    io.sockets.on("connection", function(socket){
+        console.log("Socket id:"+socket.id);
+        socket.emit("messageToClient", "Srv connected, board OK");
+        
+        sendValueViaSocket = function(value) {
+            io.sockets.emit("messageToClient", value);
+        }
+        
+    });// end of sockets.on connection
+    
+    
+      board.digitalRead(2, function(value) {
         if (value == 0) {
             console.log("LED OFF");
             board.digitalWrite(13, board.LOW);
-            console.log("Value = 0");
-            socket.emit("messageToClient", "Value = 0");
+            sendValueViaSocket(0);
         }
         if (value == 1) {
             console.log("LED ON");
             board.digitalWrite(13, board.HIGH);
-            console.log("Value = 1");
-            socket.emit("messageToClient", "Value = 1");
+            sendValueViaSocket(1);
         }
-        
-    });
-});
+    });// end of board.digital read
+
+
+
+});// end of board.on ready
