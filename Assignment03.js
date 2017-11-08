@@ -13,7 +13,7 @@ var board = new firmata.Board("/dev/ttyACM0", function(){ // ACM Abstract Contro
 
 
 function handler(req, res){
-    fs.readFile(__dirname + "/Assignment04.html",
+    fs.readFile(__dirname + "/Assignment03.html",
     function (err, data) {
         if (err) {
             res.writeHead(500,{"Content-Type": "text/plain"});
@@ -27,8 +27,7 @@ function handler(req, res){
 
 var timer1;
 var timer2;
-var timer3;
-var timer4;
+
 
 http.listen(8080);// server will listen on port 8080
 
