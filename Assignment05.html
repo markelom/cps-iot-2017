@@ -36,12 +36,12 @@ var socket = io.connect("172.16.22.138:8080"); //connect via socket
 socket.on("messageToClient", function(msg) { // when we receive the message
    log(msg); // adding message to div
    if (msg ==1){
-   	ctx.fillStyle= "green"
-   	ctx.fillRect(0,0,400,200)
+   	ctx.fillStyle= "green";
+   	ctx.fillRect(0,0,400,200);
    }
     if (msg ==0){
-   	ctx.fillStyle= "black"
-   	ctx.fillRect(0,0,400,200)
+   	ctx.fillStyle= "black";
+   	ctx.fillRect(0,0,400,200);
    }
 });
 
