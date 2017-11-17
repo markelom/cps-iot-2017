@@ -35,7 +35,7 @@ http.listen(8080);// server will listen on port 8080
 var desiredValue = 0; // desired value var
 var actualValue = 0;
 var factor = -0.1;
-var pwm
+var pwm=0;
 var controlAlgorihtmStartedFlag = 0; // flag in global scope to see weather ctrlAlg has been started
 var intervalCtrl; // var for setInterval in global spac
 
@@ -91,8 +91,10 @@ board.on("ready", function(){
 
 function sendValues (socket) {
     socket.emit("clientReadValues",
-   {
-        "desiredValue": desiredValue,
-        "actualValue": actualValue
-   });
+    { // json notation between curly braces
+    "desiredValue": desiredValue,
+    "actualValue": actualValue,
+    "pwm": pwm
+    });
+    console.log(desiredValue);
 };

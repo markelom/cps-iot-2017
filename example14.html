@@ -111,7 +111,7 @@ socket.on("clientReadValues", function(value) {
      ctx1.stroke(); // to draw the line
      // Draw second graph graph END ************************************    
      
-    log(potValue1 + "|" + potValue2);
+   log(potValue1 + "|" + potValue2 + "|" + (potValue1 - potValue2) + "|" + (value.pwm).toFixed(0) ); // log to div
 });
 
 </script>
