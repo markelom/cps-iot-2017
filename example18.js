@@ -48,6 +48,7 @@
       board.pinMode(2, board.MODES.OUTPUT); // direction of DC motor
       board.pinMode(3, board.MODES.PWM); // PWM of motor i.e. speed of rotation
       board.pinMode(4, board.MODES.OUTPUT); // direction DC motor
+      board.pinMode(13, board.MODES.OUTPUT);
   });
  
   board.on("ready", function() {
@@ -107,8 +108,15 @@
 	          if(pwm < -pwmLimit) {pwm = -pwmLimit}; // to limit the value for pwm / negative
 	          if (pwm > 0) {board.digitalWrite(2,1); board.digitalWrite(4,0);}; // določimo smer če je > 0
 	          if (pwm < 0) {board.digitalWrite(2,0); board.digitalWrite(4,1);}; // določimo smer če je < 0
-         board.analogWrite(3, Math.abs(pwm));        
+         board.analogWrite(3, Math.abs(pwm));   
+         
      }
+     if (Math.abs(pwm) <= 10) {
+        board.digitalWrite(13, board.LOW);
+    }
+    else if (Math.abs(pwm) > 10) {
+        board.digitalWrite(13, board.HIGH);
+    }
 	  };
 	 
 	  function sendValues (socket) {

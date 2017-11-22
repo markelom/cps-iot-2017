@@ -187,14 +187,14 @@ socket.on("clientReadValues", function(value) {
 })
 function startControlAlgorithm1() {
     stopControlAlgorithm(); // just in case, if it is not started
-    var pCoeff = document.getElementById("pCoeff").value*-1; // read the value of coeff from input field
+    var pCoeff = document.getElementById("pCoeff").value; // read the value of coeff from input field
     socket.emit("startControlAlgorithm", {"ctrlAlgNo": 1, "pCoeff": pCoeff}); // send value of coeff
 }
 function startControlAlgorithm2() {
     stopControlAlgorithm(); // just in case, if it is not started
-    var Kp1 = document.getElementById("Kp1").value*-1; // read the value of coeff from input field
-    var Ki1 = document.getElementById("Ki1").value*-1; // read the value of coeff from input field
-    var Kd1 = document.getElementById("Kd1").value*-1; // read the value of coeff from input field
+    var Kp1 = document.getElementById("Kp1").value; // read the value of coeff from input field
+    var Ki1 = document.getElementById("Ki1").value; // read the value of coeff from input field
+    var Kd1 = document.getElementById("Kd1").value; // read the value of coeff from input field
     socket.emit("startControlAlgorithm", {"ctrlAlgNo": 2, "Kp1": Kp1, "Ki1": Ki1, "Kd1": Kd1}); // send value of coeff
 }
 

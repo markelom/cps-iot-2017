@@ -34,7 +34,7 @@ http.listen(8080);// server will listen on port 8080
 
 var desiredValue = 0; // desired value var
 var actualValue = 0;
-var factor = -0.1;
+var factor = 0.1;
 var pwm
 
 

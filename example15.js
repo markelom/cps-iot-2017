@@ -41,9 +41,9 @@ var intervalCtrl; // var for setInterval in global spac
 
 
 // PID Algorithm variables
-var Kp = -0.055; // proportional factor
-var Ki = -0.0008; // integral factor
-var Kd = -0.015; // differential factor
+var Kp = 0.055; // proportional factor
+var Ki = 0.0008; // integral factor
+var Kd = 0.015; // differential factor
 var pwm = 0;
 var pwmLimit = 254;
 
