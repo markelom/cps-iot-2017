@@ -28,37 +28,23 @@ Kd: <input id="Kd1" value="0.025" size = "5" />
 <div id="divForStaticPrint"> </div>
 <p></p>
 
-<div id="print1"></div>
+<div id="divForPrint"></div>
 
 <br>
 
 <script type="text/javascript" src="/socket.io/socket.io.js"></script>
 
 <script type="text/javascript">
-"use strict"; // enable classes
 var potValue1 = 0; // value of the first potentiometer
 var potValue2 = 0; // value of the second potentiometer
-var graph1; // variable for graph object
-var graph2; // variable for graph object
-
-var pCoeff;
-    
-var Kp1;
-var Ki1;
-var Kd1;
-    
-var Kp2;
-var Ki2;
-var Kd2;
-
-var canvas1;
 var canvas2;
 var ctx1;
 var ctx2;
 var pwm;
-var performanceMeasure = 0;
-var intervalPulseFunction;
-var divPrint1; // variable for div object
+var graph1; // variable for graph object
+var graph2; // variable for graph object
+var divPrint1; // var for object div print
+
 
 class LogDiv {
 	      constructor(divId, numberOfLinesBeforeScroll) {
@@ -78,9 +64,9 @@ class LogDiv {
 	          this.linesPrintCounter++; // increasing the number of printouts
 	      } 
 	 
- }    
-
-
+ }  
+ 
+ 
 class Graph {
     constructor(canvasId, minGraphX, maxGraphX, minGraphY, maxGraphY, color, legend, axisDescription) { // pri konstruktorju moramo podati ID platna, ki ga sicer ustvarimo v html-ju
         this.canvas = document.getElementById(canvasId);
@@ -160,48 +146,31 @@ class Graph {
 
 
 
-
-
 function load() { // function that is started, when we open the page
-    divPrint1=new LogDiv("print1", 10);
-    graph1 = new Graph("canvas1", 0, 200, 0, 1023, ["red", "green"], ["desired", "actual"], ["0", "200", "0", "1023"]);
-    graph2 = new Graph("canvas2", 0, 200, -254, 254, ["PWM"], ["PWM"], ["0", "200", "-254", "254"]);
-    
+graph1 = new Graph("canvas1", 0, 200, 0, 1023, ["red", "green"], ["desired", "actual"], ["0", "200", "0", "1023"]);
+graph2 = new Graph("canvas2", 0, 200, -254, 254, ["PWM"], ["PWM"], ["0", "200", "-254", "254"]);
+// create divPrint1 object to output the numbers
+divPrint1 = new LogDiv("divForPrint", 10); // as the argument at the creation of the new object we declare the div name into which the printout of the log will be performed and the number of lines before the scroll
 };
-
-
 var divForPrint = document.getElementById("divForPrint");
 // var for printing messages
 var numberOfLinesInLog = 20; // variable for the number of lines in log div
 var counterOfLogs = 0; // variable for counting the logs
 
-
 var socket = io.connect("172.16.22.138:8080"); // connect via socket
-
 socket.on("messageToClient", function (msg){
-	      divPrint1.log(msg); // add msg to div
-  });
-
-
+    divPrint1.log(msg); // add msg to div
+});
 socket.on("staticMsgToClient", function(msg) { // when we recive static message
     document.getElementById("divForStaticPrint").innerHTML = "Status: " + msg; // we print to div
 });
-
-
 socket.on("clientReadValues", function(value) {
-    
     potValue1 = value.desiredValue;
     potValue2 = value.actualValue;
     pwm = parseInt((value.pwm).toFixed(0), 10);
     
-    
-  graph1.plot([potValue1, potValue2]);
+   graph1.plot([potValue1, potValue2]);
    graph2.plot([pwm]); // plot pwm
-   graph2.ctx.strokeStyle = "#add8e6";
-   graph2.ctx.beginPath(); // draw centerline at 0
-   graph2.ctx.lineTo(0, 50); // starting point
-   graph2.ctx.lineTo(200, 50); // ending point
-   graph2.ctx.stroke();
     
     
     divPrint1.log(value.desiredValue + "|" + value.actualValue + "|" + (value.desiredValue-value.actualValue) + "|" + (value.pwm).toFixed(0));
@@ -218,16 +187,12 @@ function startControlAlgorithm2() {
     var Kd1 = document.getElementById("Kd1").value; // read the value of coeff from input field
     socket.emit("startControlAlgorithm", {"ctrlAlgNo": 2, "Kp1": Kp1, "Ki1": Ki1, "Kd1": Kd1}); // send value of coeff
 }
-function stop () {
-        document.getElementById("divForStaticPrint").innerHTML = document.getElementById("divForStaticPrint").innerHTML + " | C = " + performanceMeasure;
-        clearInterval(intervalPulseFunction);
-}
 
 function stopControlAlgorithm() {
     socket.emit("stopControlAlgorithm");
 }
 socket.on("disconnect", function(){
-   divPrint1. log("Disconnected from the server"); // we print status of disconn. to div
+    divPrint1.log("Disconnected from the server"); // we print status of disconn. to div
 });
     
 </script>

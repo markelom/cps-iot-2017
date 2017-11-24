@@ -10,8 +10,15 @@
     
 <div>
 <canvas id="canvas1" width ="200" height = "100" style="border: 1px dashed #00c3c3;"></canvas>
+<canvas id="canvas4" width = "200" height = "100" style="border: 1px dashed #00c3c3;"></canvas>
+<canvas id="canvas7" width = "200" height = "100" style="border: 1px dashed #00c3c3;"></canvas>
 <br>
 <canvas id="canvas2" width ="200" height = "100" style="border: 1px dashed #00c3c3;"></canvas>    
+<canvas id="canvas5" width = "200" height = "100" style="border: 1px dashed #00c3c3;"></canvas>
+<br>
+<canvas id="canvas3" width = "200" height = "100" style="border: 1px dashed #00c3c3;"></canvas>
+<canvas id="canvas6" width = "200" height = "100" style="border: 1px dashed #00c3c3;"></canvas>
+<p></p>
 </div>
 <p></p>
 pCoeff: <input id="pCoeff" value="0.1" size="5" />
@@ -40,16 +47,19 @@ var potValue1 = 0; // value of the first potentiometer
 var potValue2 = 0; // value of the second potentiometer
 var graph1; // variable for graph object
 var graph2; // variable for graph object
+var graph3; // variable for graph object
+var graph4; // variable for graph object
+var graph5; // variable for graph object
+var graph6; // variable for graph object
+var graph7; // variable for graph object
 
 var pCoeff;
     
 var Kp1;
 var Ki1;
 var Kd1;
-    
-var Kp2;
-var Ki2;
-var Kd2;
+
+
 
 var canvas1;
 var canvas2;
@@ -166,6 +176,11 @@ function load() { // function that is started, when we open the page
     divPrint1=new LogDiv("print1", 10);
     graph1 = new Graph("canvas1", 0, 200, 0, 1023, ["red", "green"], ["desired", "actual"], ["0", "200", "0", "1023"]);
     graph2 = new Graph("canvas2", 0, 200, -254, 254, ["PWM"], ["PWM"], ["0", "200", "-254", "254"]);
+    graph3 = new Graph("canvas3", 0, 200, -100, 100, ["red", "green", "blue"], ["KpE", "KiIedt", "KdDe_dt"], ["0", "200", "-100", "100"]); // arguments: Arg1: canvasId, Arg2: maxX, Arg3: maxY, Arg4: [vector of colors];
+    graph4 = new Graph("canvas4", 0, 200, -1023, 1023, ["red"], ["Error"], ["0", "200", "-1023", "1023"]); // arguments: Arg1: canvasId, Arg2: maxX, Arg3: maxY, Arg4: [vector of colors]; this determines the size of yValue matrix (if we state one color as eg. ["red"], we assume only one time series, ["red", "green", "blue"] -> three time series) 
+    graph5 = new Graph("canvas5", 0, 200, -10000, 10000, ["red"], ["Integ(Err*dt)"], ["0", "200", "-10000", "10000"]); // arguments: Arg1: canvasId, Arg2: maxX, Arg3: maxY, Arg4: [vector of colors]; this determines the size of yValue matrix (if we state one color as eg. ["red"], we assume only one time series, ["red", "green", "blue"] -> three time series) 
+    graph6 = new Graph("canvas6", 0, 200, -150, 150, ["red"], ["dError/dt"], ["0", "200", "-150", "150"]); // arguments: Arg1: canvasId, Arg2: maxX, Arg3: maxY, Arg4: [vector of colors]; this determines the size of yValue matrix (if we state one color as eg. ["red"], we assume only one time series, ["red", "green", "blue"] -> three time series) 
+    graph7 = new Graph("canvas7", 0, 2000, 0, 500000, ["red"], ["Int(Abs(Error)dt)"], ["0", "2000", "0", "0.5M"]);
     
 };
 
@@ -195,13 +210,19 @@ socket.on("clientReadValues", function(value) {
     pwm = parseInt((value.pwm).toFixed(0), 10);
     
     
-  graph1.plot([potValue1, potValue2]);
+   graph1.plot([potValue1, potValue2]);
    graph2.plot([pwm]); // plot pwm
    graph2.ctx.strokeStyle = "#add8e6";
    graph2.ctx.beginPath(); // draw centerline at 0
    graph2.ctx.lineTo(0, 50); // starting point
    graph2.ctx.lineTo(200, 50); // ending point
    graph2.ctx.stroke();
+   graph3.plot([value.KpE, value.KiIedt, value.KdDe_dt]);
+   graph4.plot([value.err]); // graph for P part
+   graph5.plot([value.errSum]); // graph for I part
+   graph6.plot([value.dErr]); // graph for D part
+   graph7.plot([value.errSumAbs]); // graph for performance measure
+   graph7.ctx.fillText(parseInt(value.errSumAbs),70,27);
     
     
     divPrint1.log(value.desiredValue + "|" + value.actualValue + "|" + (value.desiredValue-value.actualValue) + "|" + (value.pwm).toFixed(0));

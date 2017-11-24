@@ -7,7 +7,7 @@
  var sendStaticMsgViaSocket = function() {}; // function to send static message over socket
 	 
 	  function handler(req, res) { // function with request and response, that is used in the first line of this example
-     fs.readFile(__dirname + "/example18.html",
+     fs.readFile(__dirname + "/Assignment11.html",
 	      function (err, data){
 	          if (err) {
 	              res.writeHead(500, {"Content-Type": "text/plain"});
@@ -43,12 +43,13 @@
 
  var board = new firmata.Board("/dev/ttyACM0", function(){ // ACM Abstract Control Model for serial communication with Arduino (could be USB)
   console.log("Connecting to Arduino");
-  board.pinMode(0, board.MODES.ANALOG); // analog pin 0
+      board.pinMode(0, board.MODES.ANALOG); // analog pin 0
       board.pinMode(1, board.MODES.ANALOG); // analog pin 1
       board.pinMode(2, board.MODES.OUTPUT); // direction of DC motor
       board.pinMode(3, board.MODES.PWM); // PWM of motor i.e. speed of rotation
       board.pinMode(4, board.MODES.OUTPUT); // direction DC motor
-      board.pinMode(13, board.MODES.OUTPUT);
+      board.pinMode(6, board.MODES.INPUT);
+      board.digitalWrite(6,0);
   });
  
   board.on("ready", function() {
@@ -60,12 +61,30 @@
   board.analogRead(1, function(value) {
   actualValue = value; // continuous read of pin A1
 	  });
+	  
+board.digitalRead(6, function(value) {
+        if (value == 1) {
+          
+          //  board.digitalWrite(13, board.HIGH);
+            console.log("Value = 1");
+           // socket.emit("messageToClient", "Value = 1");
+           stopControlAlgorithm();
+           
+        }
+        
+    });
 
 	  io.sockets.on('connection', function(socket) {  // from bracket ( onward, we have an argument of the function on -> at 'connection' the argument is transfered i.e. function(socket)
+	 
+	 
 	 
 	    socket.emit("messageToClient", "Server connected, board ready.");
      socket.emit("staticMsgToClient", "Server connected, board ready.");
 	 
+	 
+
+    
+    
 	      setInterval(sendValues, 40, socket); // na 40ms we send message to client
 	 
      socket.on("startControlAlgorithm", function(numberOfControlAlgorithm){
@@ -96,7 +115,7 @@
          if (pwm > 0) {board.digitalWrite(2,1); board.digitalWrite(4,0);}; // določimo smer če je > 0
          if (pwm < 0) {board.digitalWrite(2,0); board.digitalWrite(4,1);}; // določimo smer če je < 0
         board.analogWrite(3, Math.abs(pwm));
-         console.log(Math.round(pwm));
+        // console.log(Math.round(pwm));
      }
      if (parameters.ctrlAlgNo == 2) {
 	          err = desiredValue - actualValue; // error
@@ -108,10 +127,8 @@
 	          if(pwm < -pwmLimit) {pwm = -pwmLimit}; // to limit the value for pwm / negative
 	          if (pwm > 0) {board.digitalWrite(2,1); board.digitalWrite(4,0);}; // določimo smer če je > 0
 	          if (pwm < 0) {board.digitalWrite(2,0); board.digitalWrite(4,1);}; // določimo smer če je < 0
-         board.analogWrite(3, Math.abs(pwm));   
-         
+         board.analogWrite(3, Math.abs(pwm));        
      }
-    
 	  };
 	 
 	  function sendValues (socket) {
@@ -119,18 +136,16 @@
 	      { // json notation between curly braces
 	      "desiredValue": desiredValue,
       "actualValue": actualValue,
-	      "pwm": pwm,
-	       "err": err,
-       "errSum": errSum,
-      "dErr": dErr
+	      "pwm": pwm
       });
+      
 	  };
  
  function startControlAlgorithm (parameters) {
 	      if (controlAlgorithmStartedFlag == 0) {
 	          controlAlgorithmStartedFlag = 1; // set flag that the algorithm has started
          intervalCtrl = setInterval(function() {controlAlgorithm(parameters); }, 30); // na 30ms klic
-         //console.log("Control algorithm " + parameters.ctrlAlgNo + " started");
+         console.log("Control algorithm " + parameters.ctrlAlgNo + " started");
          sendStaticMsgViaSocket("Control algorithm " + parameters.ctrlAlgNo + " started | " + json2txt(parameters));
 	      }
 	  };

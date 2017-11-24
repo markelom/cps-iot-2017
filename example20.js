@@ -7,7 +7,7 @@
  var sendStaticMsgViaSocket = function() {}; // function to send static message over socket
 	 
 	  function handler(req, res) { // function with request and response, that is used in the first line of this example
-     fs.readFile(__dirname + "/example18.html",
+     fs.readFile(__dirname + "/example20.html",
 	      function (err, data){
 	          if (err) {
 	              res.writeHead(500, {"Content-Type": "text/plain"});
@@ -33,6 +33,12 @@
 	  var errSum = 0; // sum of errors
 	  var dErr = 0; // difference of error
 	  var lastErr = 0; // to keep the value of previous error
+	  
+	  var KpE = 0; // multiplication of Kp x error
+   var KiIedt = 0; // multiplication of Ki x integ. of error
+   var KdDe_dt = 0; // multiplication of Kd x differential of err.
+   
+   var errSumAbs = 0; // sum of absolute errors as performance measure
 	 
   var controlAlgorithmStartedFlag = 0; // flag in global scope to see weather ctrlAlg has been started
  var intervalCtrl; // var for setInterval in global space
@@ -91,6 +97,8 @@
  function controlAlgorithm (parameters) {
      if (parameters.ctrlAlgNo == 1) {
          pwm = parameters.pCoeff*(desiredValue-actualValue);
+         err = desiredValue-actualValue;
+         errSumAbs += Math.abs(err);
      if(pwm > pwmLimit) {pwm = pwmLimit}; // to limit the value for pwm / positive
          if(pwm < -pwmLimit) {pwm = -pwmLimit}; // to limit the value for pwm / negative
          if (pwm > 0) {board.digitalWrite(2,1); board.digitalWrite(4,0);}; // določimo smer če je > 0
@@ -101,8 +109,14 @@
      if (parameters.ctrlAlgNo == 2) {
 	          err = desiredValue - actualValue; // error
 	          errSum += err; // sum of errors, like integral
-          dErr = err - lastErr; // difference of error
-     pwm = parameters.Kp1*err + parameters.Ki1*errSum + parameters.Kd1*dErr;
+	          errSumAbs += Math.abs(err);
+           dErr = err - lastErr; // difference of error
+            // we will put parts of expression for pwm to
+           // global workspace
+          KpE = parameters.Kp1*err;
+          KiIedt = parameters.Ki1*errSum;
+          KdDe_dt = parameters.Kd1*dErr;
+          pwm = KpE + KiIedt + KdDe_dt; // we use above parts
 	          lastErr = err; // save the value for the next cycle
 	          if(pwm > pwmLimit) {pwm = pwmLimit}; // to limit the value for pwm / positive
 	          if(pwm < -pwmLimit) {pwm = -pwmLimit}; // to limit the value for pwm / negative
@@ -118,11 +132,15 @@
 	      socket.emit("clientReadValues",
 	      { // json notation between curly braces
 	      "desiredValue": desiredValue,
-      "actualValue": actualValue,
+       "actualValue": actualValue,
 	      "pwm": pwm,
-	       "err": err,
+	      "err": err,
        "errSum": errSum,
-      "dErr": dErr
+       "dErr": dErr,
+       "KpE": KpE,
+       "KiIedt": KiIedt,
+       "KdDe_dt": KdDe_dt,
+       "errSumAbs": errSumAbs
       });
 	  };
  
