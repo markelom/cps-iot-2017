@@ -114,7 +114,7 @@
          if (pwm > 0) {board.digitalWrite(2,1); board.digitalWrite(4,0);}; // določimo smer če je > 0
          if (pwm < 0) {board.digitalWrite(2,0); board.digitalWrite(4,1);}; // določimo smer če je < 0
         board.analogWrite(3, Math.abs(pwm));
-         console.log(Math.round(pwm));
+         //console.log(Math.round(pwm));
      }
      if (parameters.ctrlAlgNo == 2) {
 	          err = desiredValue - actualValue; // error
