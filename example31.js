@@ -78,7 +78,7 @@ io.sockets.on("connection", function(socket) {  // from the parentesis ( on we h
         board.digitalWrite(13, board.HIGH);
         board.digitalWrite(2,1);
         board.digitalWrite(4,0);
-        board.analogWrite(3,pwm);
+        board.analogWrite(3,pwm); 
     });
 
 });
